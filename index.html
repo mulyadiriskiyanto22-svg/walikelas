@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplikasi Wali Kelas</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js">
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+  </script>
+  <style>
+   body {
+    font-family: 'DM Sans', sans-serif;
+   }
+   .progress-ring {
+    transition: stroke-dashoffset 0.3s;
+   }
+   .view {
+    display: none;
+   }
+   .view.active {
+    display: block;
+   }
+   .nav-btn {
+    transition: transform 0.15s, box-shadow 0.15s;
+   }
+   .nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+   }
+  </style>
+ </head>
+ <body class="min-h-screen" style="background: rgb(240, 253, 244);">
+  <header class="bg-white shadow-sm border-b border-emerald-100">
+   <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+     <div class="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
+      <i data-lucide="graduation-cap" class="text-white" style="width:22px;height:22px"></i>
+     </div>
+     <div>
+      <h1 class="font-bold text-emerald-900" style="font-size: 18px;">Aplikasi Wali Kelas</h1>
+      <p class="text-sm text-emerald-700" style="font-size: 12px;">UPTD SDN GUNUNGSEKAR 5 SAMPANG</p>
+     </div>
+    </div>
+    <button id="btn-home" class="text-emerald-600 hover:text-emerald-800 flex items-center gap-1 text-sm font-medium">
+     <i data-lucide="home" style="width:18px;height:18px"></i> Dashboard
+    </button>
+   </div>
+  </header>
+  <main class="max-w-6xl mx-auto px-4 py-6">
+   <!-- DASHBOARD -->
+   <div id="view-dashboard" class="view active">
+    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6">
+     <p class="text-gray-500 text-sm">Pembuat Aplikasi</p>
+     <p class="font-semibold text-gray-800" style="font-size: 15px;">Mulyadi Riskiyanto, S.Pd.Gr</p>
+     <div class="mt-3 flex items-center gap-2">
+      <span class="text-gray-500 text-sm">Guru Kelas:</span>
+      <span id="dashboard-guru" class="font-medium text-emerald-700">-</span>
+     </div>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+     <button class="nav-btn bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center" onclick="navigate('data-sekolah')">
+      <div class="relative w-14 h-14 mx-auto mb-3">
+       <svg class="w-14 h-14 -rotate-90">
+        <circle cx="28" cy="28" r="24" fill="none" stroke="#e5e7eb" stroke-width="4"></circle>
+        <circle id="prog-sekolah" cx="28" cy="28" r="24" fill="none" stroke="#10b981" stroke-width="4" stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round" class="progress-ring"></circle>
+       </svg>
+       <span id="prog-sekolah-text" class="absolute inset-0 flex items-center justify-center text-xs font-bold text-emerald-700">0%</span>
+      </div>
+      <p class="text-sm font-semibold text-gray-700" style="font-size: 15px;">Data Sekolah</p>
+     </button>
+     <button class="nav-btn bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center" onclick="navigate('data-siswa')">
+      <div class="relative w-14 h-14 mx-auto mb-3">
+       <svg class="w-14 h-14 -rotate-90">
+        <circle cx="28" cy="28" r="24" fill="none" stroke="#e5e7eb" stroke-width="4"></circle>
+        <circle id="prog-siswa" cx="28" cy="28" r="24" fill="none" stroke="#3b82f6" stroke-width="4" stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round" class="progress-ring"></circle>
+       </svg>
+       <span id="prog-siswa-text" class="absolute inset-0 flex items-center justify-center text-xs font-bold text-blue-700">0%</span>
+      </div>
+      <p class="text-sm font-semibold text-gray-700" style="font-size: 15px;">Data Siswa</p>
+     </button>
+     <button class="nav-btn bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center opacity-60 cursor-default">
+      <div class="relative w-14 h-14 mx-auto mb-3">
+       <svg class="w-14 h-14 -rotate-90">
+        <circle cx="28" cy="28" r="24" fill="none" stroke="#e5e7eb" stroke-width="4"></circle>
+        <circle cx="28" cy="28" r="24" fill="none" stroke="#8b5cf6" stroke-width="4" stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round" class="progress-ring"></circle>
+       </svg>
+       <span class="absolute inset-0 flex items-center justify-center text-xs font-bold text-purple-700">0%</span>
+      </div>
+      <p class="text-sm font-semibold text-gray-700" style="font-size: 15px;">TP Mapel</p>
+     </button>
+     <button class="nav-btn bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center opacity-60 cursor-default">
+      <div class="relative w-14 h-14 mx-auto mb-3">
+       <svg class="w-14 h-14 -rotate-90">
+        <circle cx="28" cy="28" r="24" fill="none" stroke="#e5e7eb" stroke-width="4"></circle>
+        <circle cx="28" cy="28" r="24" fill="none" stroke="#f59e0b" stroke-width="4" stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round" class="progress-ring"></circle>
+       </svg>
+       <span class="absolute inset-0 flex items-center justify-center text-xs font-bold text-amber-700">0%</span>
+      </div>
+      <p class="text-sm font-semibold text-gray-700" style="font-size: 15px;">Nilai Mapel</p>
+     </button>
+     <button class="nav-btn bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center opacity-60 cursor-default">
+      <div class="relative w-14 h-14 mx-auto mb-3">
+       <svg class="w-14 h-14 -rotate-90">
+        <circle cx="28" cy="28" r="24" fill="none" stroke="#e5e7eb" stroke-width="4"></circle>
+        <circle cx="28" cy="28" r="24" fill="none" stroke="#06b6d4" stroke-width="4" stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round" class="progress-ring"></circle>
+       </svg>
+       <span class="absolute inset-0 flex items-center justify-center text-xs font-bold text-cyan-700">0%</span>
+      </div>
+      <p class="text-sm font-semibold text-gray-700" style="font-size: 15px;">Kokurikuler</p>
+     </button>
+     <button class="nav-btn bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center opacity-60 cursor-default">
+      <div class="relative w-14 h-14 mx-auto mb-3">
+       <svg class="w-14 h-14 -rotate-90">
+        <circle cx="28" cy="28" r="24" fill="none" stroke="#e5e7eb" stroke-width="4"></circle>
+        <circle cx="28" cy="28" r="24" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round" class="progress-ring"></circle>
+       </svg>
+       <span class="absolute inset-0 flex items-center justify-center text-xs font-bold text-red-700">0%</span>
+      </div>
+      <p class="text-sm font-semibold text-gray-700" style="font-size: 15px;">Absensi</p>
+     </button>
+     <button class="nav-btn bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center opacity-60 cursor-default">
+      <div class="relative w-14 h-14 mx-auto mb-3">
+       <svg class="w-14 h-14 -rotate-90">
+        <circle cx="28" cy="28" r="24" fill="none" stroke="#e5e7eb" stroke-width="4"></circle>
+        <circle cx="28" cy="28" r="24" fill="none" stroke="#ec4899" stroke-width="4" stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round" class="progress-ring"></circle>
+       </svg>
+       <span class="absolute inset-0 flex items-center justify-center text-xs font-bold text-pink-700">0%</span>
+      </div>
+      <p class="text-sm font-semibold text-gray-700" style="font-size: 15px;">Ekstra Kurikuler</p>
+     </button>
+     <button class="nav-btn bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center opacity-60 cursor-default">
+      <div class="w-14 h-14 mx-auto mb-3 flex items-center justify-center bg-gray-100 rounded-full">
+       <i data-lucide="file-bar-chart" class="text-gray-500" style="width:24px;height:24px"></i>
+      </div>
+      <p class="text-sm font-semibold text-gray-700" style="font-size: 15px;">Rekap Nilai</p>
+     </button>
+    </div>
+   </div>
+   <!-- DATA SEKOLAH -->
+   <div id="view-data-sekolah" class="view">
+    <div class="flex items-center gap-2 mb-4">
+     <button onclick="navigate('dashboard')" class="text-emerald-600 hover:text-emerald-800">
+      <i data-lucide="arrow-left" style="width:20px;height:20px"></i>
+     </button>
+     <h2 class="font-bold text-lg text-gray-800" style="font-size: 23px;">Data Sekolah</h2>
+    </div>
+    <form id="form-sekolah" class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4">
+     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+       <label class="block text-sm font-medium text-gray-700 mb-1" for="f-nama-sekolah">Nama Sekolah</label>
+       <input id="f-nama-sekolah" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-400 outline-none">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-gray-700 mb-1" for="f-npsn">NPSN</label>
+       <input id="f-npsn" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-400 outline-none">
+      </div>
+      <div class="md:col-span-2">
+       <label class="block text-sm font-medium text-gray-700 mb-1" for="f-alamat">Alamat</label>
+       <input id="f-alamat" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-400 outline-none">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-gray-700 mb-1" for="f-email">Email</label>
+       <input id="f-email" type="email" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-400 outline-none">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-gray-700 mb-1" for="f-kepsek">Kepala Sekolah</label>
+       <input id="f-kepsek" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-400 outline-none">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-gray-700 mb-1" for="f-nip-kepsek">NIP Kepala Sekolah</label>
+       <input id="f-nip-kepsek" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-400 outline-none">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-gray-700 mb-1" for="f-guru">Guru Kelas</label>
+       <input id="f-guru" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-400 outline-none">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-gray-700 mb-1" for="f-nip-guru">NIP Guru</label>
+       <input id="f-nip-guru" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-400 outline-none">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-gray-700 mb-1" for="f-kelas">Kelas</label>
+       <select id="f-kelas" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-400 outline-none">
+        <option value="">Pilih</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+        <option>6</option>
+       </select>
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-gray-700 mb-1" for="f-fase">Fase</label>
+       <select id="f-fase" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-400 outline-none">
+        <option value="">Pilih</option>
+        <option>A</option>
+        <option>B</option>
+        <option>C</option>
+       </select>
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-gray-700 mb-1" for="f-tahun">Tahun Ajaran</label>
+       <input id="f-tahun" placeholder="2025/2026" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-400 outline-none">
+      </div>
+     </div>
+     <div class="flex gap-3 pt-2">
+      <button type="submit" id="btn-save-sekolah" class="px-5 py-2 bg-emerald-600 text-white rounded-lg font-medium text-sm hover:bg-emerald-700 flex items-center gap-2">
+       <i data-lucide="save" style="width:16px;height:16px"></i> Simpan
+      </button>
+      <span id="save-sekolah-msg" class="text-sm text-emerald-600 self-center hidden">✓ Tersimpan</span>
+     </div>
+    </form>
+   </div>
+   <!-- DATA SISWA -->
+   <div id="view-data-siswa" class="view">
+    <div class="flex items-center gap-2 mb-4">
+     <button onclick="navigate('dashboard')" class="text-emerald-600 hover:text-emerald-800">
+      <i data-lucide="arrow-left" style="width:20px;height:20px"></i>
+     </button>
+     <h2 class="font-bold text-lg text-gray-800" style="font-size: 23px;">Data Siswa</h2>
+    </div>
+    <div class="flex flex-wrap gap-3 mb-4">
+     <!-- TOMBOL DOWNLOAD TEMPLATE - DIPERBAIKI -->
+     <button onclick="downloadTemplate()" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 flex items-center gap-2">
+      <i data-lucide="download" style="width:16px;height:16px"></i> Download Template
+     </button>
+     <label class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 cursor-pointer flex items-center gap-2">
+      <i data-lucide="upload" style="width:16px;height:16px"></i> Upload File
+      <input type="file" id="file-upload" accept=".xlsx,.xls,.csv" class="hidden">
+     </label>
+     <button onclick="showAddSiswa()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 flex items-center gap-2">
+      <i data-lucide="plus" style="width:16px;height:16px"></i> Tambah
+     </button>
+    </div>
+    <div id="upload-status" class="text-sm text-blue-600 mb-2 hidden"></div>
+    <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-100">
+     <table class="w-full text-xs">
+      <thead class="bg-gray-50 text-gray-600">
+       <tr>
+        <th class="px-2 py-2">No</th>
+        <th class="px-2 py-2">No.Induk</th>
+        <th class="px-2 py-2">NISN</th>
+        <th class="px-2 py-2">Nama</th>
+        <th class="px-2 py-2">JK</th>
+        <th class="px-2 py-2">TTL</th>
+        <th class="px-2 py-2">Ayah</th>
+        <th class="px-2 py-2">Ibu</th>
+        <th class="px-2 py-2">Aksi</th>
+       </tr>
+      </thead>
+      <tbody id="siswa-tbody"></tbody>
+     </table>
+     <p id="empty-siswa" class="text-center text-gray-400 py-6 text-sm">Belum ada data siswa</p>
+    </div>
+   </div>
+   <!-- ADD SISWA MODAL -->
+   <div id="modal-siswa" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-white rounded-xl p-6 w-full max-w-lg max-h-[80vh] overflow-y-auto">
+     <h3 class="font-bold text-gray-800 mb-4">Tambah Data Siswa</h3>
+     <form id="form-siswa" class="space-y-3">
+      <div>
+       <label class="block text-xs font-medium text-gray-600 mb-1" for="s-noinduk">No. Induk</label>
+       <input id="s-noinduk" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-400">
+      </div>
+      <div>
+       <label class="block text-xs font-medium text-gray-600 mb-1" for="s-nisn">NISN</label>
+       <input id="s-nisn" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-400">
+      </div>
+      <div>
+       <label class="block text-xs font-medium text-gray-600 mb-1" for="s-nama">Nama</label>
+       <input id="s-nama" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-400">
+      </div>
+      <div>
+       <label class="block text-xs font-medium text-gray-600 mb-1" for="s-jk">Jenis Kelamin</label>
+       <select id="s-jk" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-400">
+        <option value="">Pilih</option>
+        <option>Laki-laki</option>
+        <option>Perempuan</option>
+       </select>
+      </div>
+      <div>
+       <label class="block text-xs font-medium text-gray-600 mb-1" for="s-ttl">Tempat, Tanggal Lahir</label>
+       <input id="s-ttl" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-400">
+      </div>
+      <div>
+       <label class="block text-xs font-medium text-gray-600 mb-1" for="s-ayah">Nama Ayah</label>
+       <input id="s-ayah" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-400">
+      </div>
+      <div>
+       <label class="block text-xs font-medium text-gray-600 mb-1" for="s-ibu">Nama Ibu</label>
+       <input id="s-ibu" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-400">
+      </div>
+      <div>
+       <label class="block text-xs font-medium text-gray-600 mb-1" for="s-pkayah">Pekerjaan Ayah</label>
+       <input id="s-pkayah" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-400">
+      </div>
+      <div>
+       <label class="block text-xs font-medium text-gray-600 mb-1" for="s-pkibu">Pekerjaan Ibu</label>
+       <input id="s-pkibu" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-400">
+      </div>
+      <div>
+       <label class="block text-xs font-medium text-gray-600 mb-1" for="s-alamat">Alamat</label>
+       <input id="s-alamat" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-400">
+      </div>
+      <div>
+       <label class="block text-xs font-medium text-gray-600 mb-1" for="s-hp">No. HP</label>
+       <input id="s-hp" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-400">
+      </div>
+      <div class="flex gap-3 pt-2">
+       <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium">Simpan</button>
+       <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium">Batal</button>
+      </div>
+     </form>
+    </div>
+   </div>
+  </main>
+
+  <script>
+   // ============================================================
+   // 1. DATA SDK & STATE
+   // ============================================================
+   let allData = [];
+   const CIRC = 150.8;
+
+   function navigate(view) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + view).classList.add('active');
+   }
+
+   document.getElementById('btn-home').addEventListener('click', () => navigate('dashboard'));
+
+   const handler = {
+    onDataChanged(data) {
+     allData = data;
+     renderDashboard();
+     renderSiswaTable();
+     populateSekolahForm();
+    }
+   };
+
+   async function initApp() {
+    const r = await window.dataSdk.init(handler);
+    if (!r.isOk) console.error('SDK init failed');
+   }
+   initApp();
+
+   function getSekolah() {
+    return allData.find(d => d.type === 'sekolah');
+   }
+
+   function getSiswa() {
+    return allData.filter(d => d.type === 'siswa');
+   }
+
+   // ============================================================
+   // 2. DASHBOARD
+   // ============================================================
+   function renderDashboard() {
+    const s = getSekolah();
+    const guru = s ? s.guru_kelas : '-';
+    document.getElementById('dashboard-guru').textContent = guru || '-';
+
+    const fields = ['nama_sekolah', 'npsn', 'alamat', 'email', 'kepala_sekolah', 'nip_kepsek', 'guru_kelas', 'nip_guru', 'kelas', 'fase', 'tahun_ajaran'];
+    let filled = 0;
+    if (s) fields.forEach(f => { if (s[f]) filled++; });
+    const pct = Math.round((filled / fields.length) * 100);
+    document.getElementById('prog-sekolah').style.strokeDashoffset = CIRC - (CIRC * pct / 100);
+    document.getElementById('prog-sekolah-text').textContent = pct + '%';
+
+    const siswa = getSiswa();
+    const spct = siswa.length > 0 ? 100 : 0;
+    document.getElementById('prog-siswa').style.strokeDashoffset = CIRC - (CIRC * spct / 100);
+    document.getElementById('prog-siswa-text').textContent = spct + '%';
+   }
+
+   // ============================================================
+   // 3. DATA SEKOLAH
+   // ============================================================
+   function populateSekolahForm() {
+    const s = getSekolah();
+    if (!s) return;
+    document.getElementById('f-nama-sekolah').value = s.nama_sekolah || '';
+    document.getElementById('f-npsn').value = s.npsn || '';
+    document.getElementById('f-alamat').value = s.alamat || '';
+    document.getElementById('f-email').value = s.email || '';
+    document.getElementById('f-kepsek').value = s.kepala_sekolah || '';
+    document.getElementById('f-nip-kepsek').value = s.nip_kepsek || '';
+    document.getElementById('f-guru').value = s.guru_kelas || '';
+    document.getElementById('f-nip-guru').value = s.nip_guru || '';
+    document.getElementById('f-kelas').value = s.kelas || '';
+    document.getElementById('f-fase').value = s.fase || '';
+    document.getElementById('f-tahun').value = s.tahun_ajaran || '';
+   }
+
+   document.getElementById('form-sekolah').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btn-save-sekolah');
+    btn.disabled = true;
+    btn.textContent = 'Menyimpan...';
+    const data = {
+     type: 'sekolah',
+     nama_sekolah: document.getElementById('f-nama-sekolah').value,
+     npsn: document.getElementById('f-npsn').value,
+     alamat: document.getElementById('f-alamat').value,
+     email: document.getElementById('f-email').value,
+     kepala_sekolah: document.getElementById('f-kepsek').value,
+     nip_kepsek: document.getElementById('f-nip-kepsek').value,
+     guru_kelas: document.getElementById('f-guru').value,
+     nip_guru: document.getElementById('f-nip-guru').value,
+     kelas: document.getElementById('f-kelas').value,
+     fase: document.getElementById('f-fase').value,
+     tahun_ajaran: document.getElementById('f-tahun').value
+    };
+    const existing = getSekolah();
+    let result;
+    if (existing) {
+     result = await window.dataSdk.update({ ...existing,
+      ...data });
+    } else {
+     result = await window.dataSdk.create(data);
+    }
+    btn.disabled = false;
+    btn.innerHTML = '<i data-lucide="save" style="width:16px;height:16px"></i> Simpan';
+    lucide.createIcons();
+    const msg = document.getElementById('save-sekolah-msg');
+    if (result.isOk) {
+     msg.classList.remove('hidden');
+     setTimeout(() => msg.classList.add('hidden'), 2000);
+    }
+   });
+
+   // ============================================================
+   // 4. DATA SISWA
+   // ============================================================
+   function renderSiswaTable() {
+    const siswa = getSiswa();
+    const tbody = document.getElementById('siswa-tbody');
+    const empty = document.getElementById('empty-siswa');
+    empty.style.display = siswa.length ? 'none' : 'block';
+    tbody.innerHTML = '';
+    siswa.forEach((s, i) => {
+     const tr = document.createElement('tr');
+     tr.className = 'border-t border-gray-100';
+     tr.innerHTML =
+      `<td class="px-2 py-2 text-center">${i+1}</td><td class="px-2 py-2">${s.no_induk||''}</td><td class="px-2 py-2">${s.nisn||''}</td><td class="px-2 py-2 font-medium">${s.nama||''}</td><td class="px-2 py-2">${s.jenis_kelamin||''}</td><td class="px-2 py-2">${s.tempat_tanggal_lahir||''}</td><td class="px-2 py-2">${s.nama_ayah||''}</td><td class="px-2 py-2">${s.nama_ibu||''}</td><td class="px-2 py-2"><button class="text-red-500 hover:text-red-700" onclick="deleteSiswa('${s.__backendId}')"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button></td>`;
+     tbody.appendChild(tr);
+    });
+    lucide.createIcons();
+   }
+
+   async function deleteSiswa(id) {
+    const rec = allData.find(d => d.__backendId === id);
+    if (rec) await window.dataSdk.delete(rec);
+   }
+
+   function showAddSiswa() {
+    document.getElementById('modal-siswa').classList.remove('hidden');
+   }
+
+   function closeModal() {
+    document.getElementById('modal-siswa').classList.add('hidden');
+    document.getElementById('form-siswa').reset();
+   }
+
+   document.getElementById('form-siswa').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (allData.length >= 999) {
+     document.getElementById('upload-status').textContent = 'Batas 999 data tercapai!';
+     document.getElementById('upload-status').classList.remove('hidden');
+     return;
+    }
+    const data = {
+     type: 'siswa',
+     no_induk: document.getElementById('s-noinduk').value,
+     nisn: document.getElementById('s-nisn').value,
+     nama: document.getElementById('s-nama').value,
+     jenis_kelamin: document.getElementById('s-jk').value,
+     tempat_tanggal_lahir: document.getElementById('s-ttl').value,
+     nama_ayah: document.getElementById('s-ayah').value,
+     nama_ibu: document.getElementById('s-ibu').value,
+     pekerjaan_ayah: document.getElementById('s-pkayah').value,
+     pekerjaan_ibu: document.getElementById('s-pkibu').value,
+     alamat_siswa: document.getElementById('s-alamat').value,
+     no_hp: document.getElementById('s-hp').value
+    };
+    await window.dataSdk.create(data);
+    closeModal();
+   });
+
+   // ============================================================
+   // 5. DOWNLOAD TEMPLATE EXCEL (FIX)
+   // ============================================================
+   function downloadTemplate() {
+    try {
+     // Buat workbook baru
+     const wb = XLSX.utils.book_new();
+
+     // Data header (1 baris kosong untuk contoh)
+     const headers = [
+      'No Induk',
+      'NISN',
+      'Nama',
+      'Jenis Kelamin',
+      'Tempat Tanggal Lahir',
+      'Nama Ayah',
+      'Nama Ibu',
+      'Pekerjaan Ayah',
+      'Pekerjaan Ibu',
+      'Alamat',
+      'No HP'
+     ];
+
+     // Data contoh (1 siswa sebagai panduan)
+     const contoh = [
+      '2025001',
+      '1234567890',
+      'Ahmad Zainuddin',
+      'Laki-laki',
+      'Surabaya, 15 Januari 2015',
+      'H. Slamet Riyadi',
+      'Hj. Siti Aminah',
+      'Wiraswasta',
+      'Ibu Rumah Tangga',
+      'Jl. Raya Gunungsekar No. 45, Sampang',
+      '081234567890'
+     ];
+
+     // Gabungkan header + contoh
+     const data = [
+      headers,
+      contoh,
+      // baris kosong untuk diisi user
+      ['', '', '', '', '', '', '', '', '', '', '']
+     ];
+
+     // Konversi ke sheet
+     const ws = XLSX.utils.aoa_to_sheet(data);
+
+     // Set lebar kolom agar nyaman
+     ws['!cols'] = [
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 25 },
+      { wch: 15 },
+      { wch: 25 },
+      { wch: 25 },
+      { wch: 25 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 35 },
+      { wch: 18 }
+     ];
+
+     // Tambahkan sheet ke workbook
+     XLSX.utils.book_append_sheet(wb, ws, 'Template Siswa');
+
+     // Generate file
+     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+     // Buat blob dan download
+     const blob = new Blob([wbout], { type: 'application/octet-stream' });
+     const link = document.createElement('a');
+     link.href = URL.createObjectURL(blob);
+     link.download = 'Template_Data_Siswa.xlsx';
+     document.body.appendChild(link);
+     link.click();
+     document.body.removeChild(link);
+     URL.revokeObjectURL(link.href);
+
+     // Tampilkan status sukses
+     const status = document.getElementById('upload-status');
+     status.textContent = '✓ Template berhasil didownload!';
+     status.className = 'text-sm text-green-600 mb-2';
+     status.classList.remove('hidden');
+     setTimeout(() => { status.classList.add('hidden'); }, 4000);
+
+    } catch (err) {
+     console.error('Error download template:', err);
+     const status = document.getElementById('upload-status');
+     status.textContent = '❌ Gagal download template. Silakan coba lagi.';
+     status.className = 'text-sm text-red-600 mb-2';
+     status.classList.remove('hidden');
+    }
+   }
+
+   // ============================================================
+   // 6. UPLOAD FILE EXCEL
+   // ============================================================
+   document.getElementById('file-upload').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validasi ekstensi
+    const validExt = ['.xlsx', '.xls', '.csv'];
+    const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+    if (!validExt.includes(ext)) {
+     const status = document.getElementById('upload-status');
+     status.textContent = '❌ Format file tidak didukung. Gunakan .xlsx, .xls, atau .csv';
+     status.className = 'text-sm text-red-600 mb-2';
+     status.classList.remove('hidden');
+     e.target.value = '';
+     return;
+    }
+
+    const status = document.getElementById('upload-status');
+    status.textContent = '⏳ Memproses file...';
+    status.className = 'text-sm text-blue-600 mb-2';
+    status.classList.remove('hidden');
+
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+     try {
+      const wb = XLSX.read(ev.target.result, { type: 'array' });
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+
+      if (rows.length === 0) {
+       status.textContent = '⚠️ File kosong. Tidak ada data yang diupload.';
+       status.className = 'text-sm text-yellow-600 mb-2';
+       e.target.value = '';
+       return;
+      }
+
+      let count = 0;
+      let errorCount = 0;
+
+      for (const row of rows) {
+       if (allData.length >= 999) break;
+
+       // Cek apakah ada data minimal nama atau NISN
+       const nama = String(row['Nama'] || row['nama'] || row['NAMA'] || '');
+       const nisn = String(row['NISN'] || row['nisn'] || '');
+       const noInduk = String(row['No Induk'] || row['No.Induk'] || row['no_induk'] || '');
+
+       if (!nama && !nisn && !noInduk) {
+        errorCount++;
+        continue;
+       }
+
+       await window.dataSdk.create({
+        type: 'siswa',
+        no_induk: noInduk,
+        nisn: nisn,
+        nama: nama,
+        jenis_kelamin: String(row['Jenis Kelamin'] || row['JK'] || row['jenis_kelamin'] || ''),
+        tempat_tanggal_lahir: String(row['Tempat Tanggal Lahir'] || row['TTL'] || row['tempat_tanggal_lahir'] || ''),
+        nama_ayah: String(row['Nama Ayah'] || row['nama_ayah'] || ''),
+        nama_ibu: String(row['Nama Ibu'] || row['nama_ibu'] || ''),
+        pekerjaan_ayah: String(row['Pekerjaan Ayah'] || row['pekerjaan_ayah'] || ''),
+        pekerjaan_ibu: String(row['Pekerjaan Ibu'] || row['pekerjaan_ibu'] || ''),
+        alamat_siswa: String(row['Alamat'] || row['alamat'] || row['alamat_siswa'] || ''),
+        no_hp: String(row['No HP'] || row['No.HP'] || row['no_hp'] || '')
+       });
+       count++;
+      }
+
+      if (count === 0 && errorCount > 0) {
+       status.textContent = '⚠️ Tidak ada data valid. Pastikan format header sesuai template.';
+       status.className = 'text-sm text-yellow-600 mb-2';
+      } else {
+       status.textContent = `✅ ${count} siswa berhasil diupload${errorCount > 0 ? `, ${errorCount} baris dilewati (data kosong)` : ''}`;
+       status.className = 'text-sm text-green-600 mb-2';
+      }
+     } catch (err) {
+      console.error('Upload error:', err);
+      status.textContent = '❌ Gagal memproses file. Pastikan format benar.';
+      status.className = 'text-sm text-red-600 mb-2';
+     }
+     e.target.value = '';
+     setTimeout(() => { status.classList.add('hidden'); }, 6000);
+    };
+
+    reader.onerror = () => {
+     const status = document.getElementById('upload-status');
+     status.textContent = '❌ Gagal membaca file.';
+     status.className = 'text-sm text-red-600 mb-2';
+     status.classList.remove('hidden');
+     e.target.value = '';
+    };
+
+    reader.readAsArrayBuffer(file);
+   });
+
+   // ============================================================
+   // 7. INISIALISASI IKON
+   // ============================================================
+   lucide.createIcons();
+  </script>
+ </body>
+</html>
